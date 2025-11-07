@@ -6,6 +6,7 @@
 
 🚀 **VisiStat** 是一款专为 **AstrBot** 设计的可视化服务器状态监控插件，它以**图表优先**的精美卡片形式，提供简洁、直观的资源使用概览，帮助您实时掌握服务器运行健康状况。
 
+此插件由Gemini AI模型编写
 ---
 
 ## 📸 功能特性概览
@@ -107,8 +108,6 @@ Windows 用户： 如果获取不到温度信息，请确保 wmi 库已成功安
 借鉴插件：
         https://github.com/yanfd/astrbot_plugin_server
         https://github.com/BB0813/astrbot_plugin_sysinfoimg/blob/master/metadata.yaml
-
-协助：此插件由Gemini AI模型编写
 
 ## 🤝 参与贡献
 1. Fork 本仓库
