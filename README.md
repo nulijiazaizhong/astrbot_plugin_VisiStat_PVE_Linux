@@ -1,9 +1,3 @@
-✨ VisiStat: 服务器状态可视化插件 README.md
-
-
-Markdown
-
-
 # VisiStat - 服务器状态可视化插件
 
 [![License](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
