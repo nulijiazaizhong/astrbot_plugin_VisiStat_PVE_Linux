@@ -33,8 +33,8 @@
             "image_path": {
                 "description": "背景图片路径（相对于插件根目录）",
                 "type": "string",
-                "default": "resources/bg1.png",
-                "hint": "例如：resources/bg1.png，为空则使用纯色背景"
+                "default": "resources/bg2.png",
+                "hint": "例如：resources/bg2.png，为空则使用纯色背景"
             },
             "blur_radius": {
                 "description": "背景模糊半径 (0为不模糊)",
