@@ -62,7 +62,7 @@ wmi; platform_system == "Windows"
 ```
 
 效果示例：
-![](https://github.com/nulijiazaizhong/astrbot_plugin_VisiStat_PVE_Linux/public/example.png)
+![](https://raw.githubusercontent.com/nulijiazaizhong/astrbot_plugin_VisiStat_PVE_Linux/refs/heads/master/public/example.png)
 Tips:内置两张壁纸，默认使用bg2.png（横版），可自行切换bg1.png查看竖版
 
 ## ⚙️ 配置说明
