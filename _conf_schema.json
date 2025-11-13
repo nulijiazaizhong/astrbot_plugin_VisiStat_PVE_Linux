@@ -100,6 +100,16 @@
                 "type": "bool",
                 "default": true
             },
+            "external_cpu_temp_file": {
+                "description": "CPU温度外部文件路径（容器内可访问路径）",
+                "type": "string",
+                "default": ""
+            },
+            "external_temp_file_unit": {
+                "description": "外部温度文件单位 ('C' 或 'F')",
+                "type": "string",
+                "default": "C"
+            },
             "monitor_gpu_temp": {
                 "description": "是否监控GPU温度（Win端可能无法监控）",
                 "type": "bool",

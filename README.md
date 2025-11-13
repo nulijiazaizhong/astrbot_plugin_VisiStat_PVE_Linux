@@ -15,6 +15,9 @@
 * **优雅的横屏设计：** 采用左右分栏、视觉平衡的三等距布局，信息区块自动缩放和换行，适应各种卡片尺寸。
 * **全面监控：** 实时监控 CPU、内存、磁盘使用率、网络流量、系统温度、运行时间、电池状态等关键指标。
 * **高度可配置：** 支持自定义背景、头像、名称、缩放因子和温度单位（°C/°F）等。
+* **PVE优化：** 专门为在PVE下使用Linux的用户优化了CPU温度和功耗显示。（如使用docker部署需映射温度文件，温度文件的样式是这样的：2025-11-13T23:16:35+08:00 CPU:34.0°C POWER:284.0W）
+
+关于给虚拟机添加可访问的温度文件请查看我的博客：[将PVE的温度与公告信息添加到Linux虚拟机中](https://blog.goodnightan.com/posts/pve-vm-temperature-display/)
 
 ## 📦 安装与依赖
 
@@ -24,7 +27,7 @@
 
 ```bash
 cd /AstrBot/data/plugins
-git clone https://github.com/Rentz412/astrbot_plugin_VisiStat.git
+git clone https://github.com/nulijiazaizhong/astrbot_plugin_VisiStat_PVE_Linux.git
 ```
 
 
@@ -59,7 +62,7 @@ wmi; platform_system == "Windows"
 ```
 
 效果示例：
-![](https://github.com/Rentz412/astrbot_plugin_VisiStat/blob/origin/ciallo!.png)
+![](https://github.com/nulijiazaizhong/astrbot_plugin_VisiStat_PVE_Linux/public/example.png)
 Tips:内置两张壁纸，默认使用bg2.png（横版），可自行切换bg1.png查看竖版
 
 ## ⚙️ 配置说明

@@ -69,6 +69,8 @@ class ServerMonitor(Star):
 
         sensor_cfg = self.config.get('sensor_config', {})
         self.monitor_cpu_temp = sensor_cfg.get('monitor_cpu_temp', True)
+        self.external_cpu_temp_file = sensor_cfg.get('external_cpu_temp_file', '')
+        self.external_temp_file_unit = sensor_cfg.get('external_temp_file_unit', 'C')
         self.monitor_gpu_temp = sensor_cfg.get('monitor_gpu_temp', True)
         self.monitor_bat_temp = sensor_cfg.get('monitor_bat_temp', False)
         self.monitor_battery_status = sensor_cfg.get('monitor_battery_status', True)
@@ -239,7 +241,33 @@ class ServerMonitor(Star):
         return chart_image
 
     def _get_linux_temp_data(self, temp_unit: str) -> Dict[str, Optional[float]]:
-        temp_data = {'cpu_temp': None, 'gpu_temp': None, 'bat_temp': None}
+        temp_data = {'cpu_temp': None, 'gpu_temp': None, 'bat_temp': None, 'power_w': None}
+        try:
+            if self.monitor_cpu_temp and self.external_cpu_temp_file:
+                with open(self.external_cpu_temp_file, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                m = re.search(r'CPU\s*[:=]?\s*([-+]?\d+(?:\.\d+)?)\s*°?\s*([CF])?', content, re.IGNORECASE)
+                if not m:
+                    m = re.search(r'\bcpu\b[^\d+-]*([-+]?\d+(?:\.\d+)?)\s*°?\s*([CF])?', content, re.IGNORECASE)
+                if m:
+                    val = float(m.group(1))
+                    fu = m.group(2).upper() if m.group(2) else (self.external_temp_file_unit or 'C').upper()
+                    tu = (temp_unit or 'C').upper()
+                    if fu == 'F':
+                        c = (val - 32) * 5/9
+                    else:
+                        c = val
+                    if tu == 'F':
+                        temp_data['cpu_temp'] = c * 9/5 + 32
+                    else:
+                        temp_data['cpu_temp'] = c
+                p = re.search(r'POWER\s*[:=]?\s*([-+]?\d+(?:\.\d+)?)\s*W', content, re.IGNORECASE)
+                if not p:
+                    p = re.search(r'\bpower\b[^\d+-]*([-+]?\d+(?:\.\d+)?)\s*W', content, re.IGNORECASE)
+                if p:
+                    temp_data['power_w'] = float(p.group(1))
+        except Exception:
+            pass
         
         if not hasattr(psutil, "sensors_temperatures"):
             return temp_data
@@ -250,7 +278,7 @@ class ServerMonitor(Star):
         except Exception:
             return temp_data
         
-        if self.monitor_cpu_temp:
+        if self.monitor_cpu_temp and temp_data['cpu_temp'] is None:
             cpu_temps = temps.get('coretemp', temps.get('cpu_thermal'))
             if not cpu_temps:
                 for name, entries in temps.items():
@@ -433,6 +461,8 @@ class ServerMonitor(Star):
         temp_data_list = self._format_temp_data(data['temp_results'])
         L_temp = len(temp_data_list)
         L_B += max(1, L_temp) 
+        L_power = 1 if data['temp_results'].get('power_w') is not None else 0
+        L_B += L_power
         
         L_bat = 1 if self.monitor_battery_status and data['bat_data']['percent'] is not None else 0
         L_B += L_bat
@@ -511,6 +541,10 @@ class ServerMonitor(Star):
                 draw.text((temp_start_x, current_y), label + value, 
                           font=content_font_medium, fill=text_block_fill)
                 current_y += LINE_SPACING
+        if data['temp_results'].get('power_w') is not None:
+            power_prefix = "系统功率: "
+            draw.text((x_pos, current_y), f"{power_prefix}{data['temp_results']['power_w']:.1f}W", font=content_font_medium, fill=text_block_fill)
+            current_y += LINE_SPACING
         
         if self.monitor_battery_status and data['bat_data']['percent'] is not None:
             draw.text((x_pos, current_y), data['bat_data']['status_text'], font=content_font_medium, fill=text_block_fill)
@@ -681,12 +715,13 @@ class ServerMonitor(Star):
         
         temp_data_list = self._format_temp_data(data['temp_results'])
         temp_lines_count = max(1, len(temp_data_list))
+        power_lines_count = 1 if data['temp_results'].get('power_w') is not None else 0
         
         simple_lines_count = 4 
         if self.monitor_battery_status and data['bat_data']['percent'] is not None:
              simple_lines_count += 1
         
-        total_A_content_lines = sys_info_lines_count + temp_lines_count + simple_lines_count
+        total_A_content_lines = sys_info_lines_count + temp_lines_count + power_lines_count + simple_lines_count
         total_A_content_height = total_A_content_lines * LINE_SPACING + MARGIN // 2
         
         HEADER_CONTENT_GAP = MARGIN // 2 
@@ -731,6 +766,10 @@ class ServerMonitor(Star):
                 draw.text((temp_start_x, current_y), label + value, 
                           font=content_font_medium, fill=text_block_fill)
                 current_y += LINE_SPACING
+        if data['temp_results'].get('power_w') is not None:
+            power_prefix = "系统功率: "
+            draw.text((x_pos, current_y), f"{power_prefix}{data['temp_results']['power_w']:.1f}W", font=content_font_medium, fill=text_block_fill)
+            current_y += LINE_SPACING
         
         if self.monitor_battery_status and data['bat_data']['percent'] is not None:
             draw.text((x_pos, current_y), data['bat_data']['status_text'], font=content_font_medium, fill=text_block_fill)
